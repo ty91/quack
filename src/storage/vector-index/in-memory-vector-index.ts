@@ -16,7 +16,7 @@ export class InMemoryVectorIndex implements VectorIndex {
     return vectorIds;
   }
 
-  search(queryVector: number[], topK: number): VectorSearchResult[] {
+  search(queryVector: number[], limit: number): VectorSearchResult[] {
     if (this.vectors.length === 0) {
       return [];
     }
@@ -28,7 +28,7 @@ export class InMemoryVectorIndex implements VectorIndex {
     }));
 
     results.sort((left, right) => right.score - left.score);
-    return results.slice(0, topK);
+    return results.slice(0, limit);
   }
 
   async save(): Promise<void> {

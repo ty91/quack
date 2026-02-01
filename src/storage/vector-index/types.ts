@@ -5,7 +5,7 @@ export type VectorSearchResult = {
 
 export type VectorIndex = {
   add: (vectors: number[][]) => number[];
-  search: (queryVector: number[], topK: number) => VectorSearchResult[];
+  search: (queryVector: number[], limit: number) => VectorSearchResult[];
   save: () => Promise<void>;
   close: () => void;
 };

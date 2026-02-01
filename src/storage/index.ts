@@ -5,7 +5,8 @@ export { createFilesRepository } from "./repositories/files-repository.js";
 export { createChunksRepository } from "./repositories/chunks-repository.js";
 export { createEmbeddingsRepository } from "./repositories/embeddings-repository.js";
 export { createSyncRunsRepository } from "./repositories/sync-runs-repository.js";
-export { InMemoryVectorIndex } from "./vector-index/index.js";
+export { createFullTextSearchRepository } from "./repositories/full-text-search-repository.js";
+export { HierarchicalVectorIndex, InMemoryVectorIndex } from "./vector-index/index.js";
 export type {
   ChunkRecord,
   EmbeddingRecord,
@@ -14,3 +15,4 @@ export type {
   SyncRunRecord,
 } from "./types.js";
 export type { VectorIndex, VectorSearchResult } from "./vector-index/index.js";
+export type { FullTextSearchResult } from "./repositories/full-text-search-repository.js";
