@@ -1,0 +1,7 @@
+plan.md
+progress.md
+node_modules/
+dist/
+.quack/
+.DS_Store
+*.log

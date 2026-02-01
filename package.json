@@ -1,0 +1,36 @@
+{
+  "name": "quack",
+  "version": "1.0.0",
+  "description": "Local document search CLI",
+  "main": "dist/cli/index.js",
+  "scripts": {
+    "test": "vitest run --passWithNoTests",
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli/index.ts",
+    "start": "node dist/cli/index.js",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.27.0",
+  "type": "module",
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "commander": "^14.0.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "eslint": "^9.39.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "bin": {
+    "quack": "dist/cli/index.js"
+  }
+}
