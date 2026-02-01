@@ -36,6 +36,9 @@ export function createSyncRunsRepository(database: SqliteDatabase) {
   const listBySourceStatement = database.prepare(
     `SELECT * FROM "sync-runs" WHERE source_id = ? ORDER BY started_at DESC`,
   );
+  const latestBySourceStatement = database.prepare(
+    `SELECT * FROM "sync-runs" WHERE source_id = ? ORDER BY started_at DESC LIMIT 1`,
+  );
 
   function startSyncRun(input: StartSyncRunInput): SyncRunRecord {
     const timestamp = getIsoTimestamp();
@@ -56,10 +59,16 @@ export function createSyncRunsRepository(database: SqliteDatabase) {
     return rows.map(mapSyncRunRow);
   }
 
+  function getLatestSyncRun(sourceId: number): SyncRunRecord | null {
+    const row = latestBySourceStatement.get(sourceId) as SyncRunRow | undefined;
+    return row ? mapSyncRunRow(row) : null;
+  }
+
   return {
     startSyncRun,
     finishSyncRun,
     listSyncRunsBySource,
+    getLatestSyncRun,
   };
 }
 

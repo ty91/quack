@@ -37,6 +37,12 @@ export function createChunksRepository(database: SqliteDatabase) {
       SELECT id FROM chunks WHERE file_id = ?
      )`,
   );
+  const deleteFtsStatement = database.prepare(
+    `DELETE FROM "chunks-fts" WHERE chunk_id IN (
+      SELECT id FROM chunks WHERE file_id = ?
+     )`,
+  );
+  const deleteChunksStatement = database.prepare(`DELETE FROM chunks WHERE file_id = ?`);
   const findByIdStatement = database.prepare(`SELECT * FROM chunks WHERE id = ?`);
   const listByFileStatement = database.prepare(
     `SELECT * FROM chunks WHERE file_id = ? ORDER BY chunk_index ASC`,
@@ -72,6 +78,14 @@ export function createChunksRepository(database: SqliteDatabase) {
     markDeleted();
   }
 
+  function deleteChunksByFile(fileId: number): void {
+    const removeChunks = database.transaction(() => {
+      deleteFtsStatement.run(fileId);
+      deleteChunksStatement.run(fileId);
+    });
+    removeChunks();
+  }
+
   function listChunksByFile(fileId: number): ChunkRecord[] {
     const rows = listByFileStatement.all(fileId) as ChunkRow[];
     return rows.map(mapChunkRow);
@@ -80,6 +94,7 @@ export function createChunksRepository(database: SqliteDatabase) {
   return {
     createChunk,
     markChunksDeletedByFile,
+    deleteChunksByFile,
     listChunksByFile,
   };
 }

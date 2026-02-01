@@ -50,6 +50,12 @@ export function createFilesRepository(database: SqliteDatabase) {
   const listBySourceStatement = database.prepare(
     `SELECT * FROM files WHERE source_id = ? ORDER BY path ASC`,
   );
+  const countBySourceStatement = database.prepare(
+    `SELECT COUNT(*) as count FROM files WHERE source_id = ? AND is_deleted = 0`,
+  );
+  const countAllBySourceStatement = database.prepare(
+    `SELECT COUNT(*) as count FROM files WHERE source_id = ?`,
+  );
 
   function createFile(input: CreateFileInput): FileRecord {
     const timestamp = getIsoTimestamp();
@@ -94,6 +100,13 @@ export function createFilesRepository(database: SqliteDatabase) {
     return rows.map(mapFileRow);
   }
 
+  function countFilesBySource(sourceId: number, includeDeleted = false): number {
+    const row = includeDeleted
+      ? (countAllBySourceStatement.get(sourceId) as { count: number })
+      : (countBySourceStatement.get(sourceId) as { count: number });
+    return row.count;
+  }
+
   return {
     createFile,
     updateFile,
@@ -101,6 +114,7 @@ export function createFilesRepository(database: SqliteDatabase) {
     getFileById,
     getFileByPath,
     listFilesBySource,
+    countFilesBySource,
   };
 }
 
