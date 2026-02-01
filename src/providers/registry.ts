@@ -1,5 +1,6 @@
 import type { Config } from "../config/schema.js";
 import { TokenChunker } from "./chunker/token-chunker.js";
+import { LlamaCppEmbeddingProvider } from "./embedding/llama-cpp-embedding.js";
 import { MockEmbeddingProvider } from "./embedding/mock-embedding-provider.js";
 import { RrfMixer } from "./mixer/rrf-mixer.js";
 import { TransformersJsReranker } from "./reranker/transformers-js-reranker.js";
@@ -37,7 +38,12 @@ export class ProviderRegistry {
     }
 
     if (name === "llama-cpp-embedding") {
-      throw new Error("Embedding provider not implemented: llama-cpp-embedding");
+      return new LlamaCppEmbeddingProvider({
+        modelPath: this.config.models.embedding.modelPath,
+        modelId: this.config.models.embedding.modelId,
+        cacheDir: this.config.models.cacheDir,
+        dimension: this.config.models.embedding.dimension,
+      });
     }
 
     throw new Error(`Unsupported embedding provider: ${name}`);
