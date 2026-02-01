@@ -5,7 +5,7 @@ import {
   getConfigFilePath,
   loadMergedConfig,
   parseOutputFormat,
-  writeDefaultConfigFile
+  writeDefaultConfigFile,
 } from "../config/index.js";
 
 type GlobalOptions = {

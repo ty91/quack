@@ -15,36 +15,36 @@ export function getDefaultConfig(): Config {
     paths: {
       dataDir,
       dbPath: path.join(dataDir, "quack.db"),
-      vectorIndexPath: path.join(dataDir, "index.hnsw")
+      vectorIndexPath: path.join(dataDir, "index.hnsw"),
     },
     models: {
       cacheDir: path.join(dataDir, "models"),
       embedding: {
         provider: "llama-cpp-embedding",
         modelId: "google/embeddinggemma-300m",
-        dimension: 768
+        dimension: 768,
       },
       reranker: {
         provider: "transformers-js-reranker",
-        modelId: "jinaai/jina-reranker-v2-base-multilingual"
-      }
+        modelId: "jinaai/jina-reranker-v2-base-multilingual",
+      },
     },
     search: {
       top: 5,
       bm25K: 50,
       vectorK: 50,
       rerankK: 20,
-      rrfK: 60
+      rrfK: 60,
     },
     chunking: {
       chunkTokens: 512,
-      overlapTokens: 64
+      overlapTokens: 64,
     },
     providers: {
       embedding: "llama-cpp-embedding",
       reranker: "transformers-js-reranker",
       mixer: "rrf-mixer",
-      chunker: "token-chunker"
-    }
+      chunker: "token-chunker",
+    },
   };
 }

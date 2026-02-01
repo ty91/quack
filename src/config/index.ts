@@ -43,18 +43,9 @@ export async function loadMergedConfig(options: ConfigLoadOptions): Promise<Conf
   const environmentConfig = loadEnvironmentConfig();
   const overrideConfig = options.overrides ?? {};
 
-  const explicitPaths = collectExplicitPaths([
-    fileConfig,
-    environmentConfig,
-    overrideConfig
-  ]);
+  const explicitPaths = collectExplicitPaths([fileConfig, environmentConfig, overrideConfig]);
 
-  const mergedConfig = mergeDeep(
-    defaultConfig,
-    fileConfig,
-    environmentConfig,
-    overrideConfig
-  );
+  const mergedConfig = mergeDeep(defaultConfig, fileConfig, environmentConfig, overrideConfig);
 
   const withDerivedPaths = applyDerivedPaths(mergedConfig, explicitPaths);
   const resolvedPaths = resolveConfigPaths(withDerivedPaths);
@@ -62,9 +53,7 @@ export async function loadMergedConfig(options: ConfigLoadOptions): Promise<Conf
   return configSchema.parse(resolvedPaths);
 }
 
-export async function writeDefaultConfigFile(
-  configPath?: string
-): Promise<string> {
+export async function writeDefaultConfigFile(configPath?: string): Promise<string> {
   const targetPath = getConfigFilePath(configPath);
 
   try {
@@ -82,10 +71,7 @@ export async function writeDefaultConfigFile(
   }
 }
 
-export function formatConfigOutput(
-  config: Config,
-  format: OutputFormat
-): string {
+export function formatConfigOutput(config: Config, format: OutputFormat): string {
   if (format === "json") {
     return JSON.stringify(stripUndefined(config), null, 2);
   }
@@ -99,9 +85,7 @@ export function formatConfigOutput(
   return `# Config\n\n\`\`\`toml\n${tomlContent}\`\`\`\n`;
 }
 
-async function loadConfigFile(
-  configPath: string
-): Promise<Partial<Config>> {
+async function loadConfigFile(configPath: string): Promise<Partial<Config>> {
   try {
     const content = await fs.readFile(configPath, "utf8");
     const parsed = toml.parse(content);
@@ -127,12 +111,7 @@ function loadEnvironmentConfig(): Partial<Config> {
   const paths: Record<string, string> = {};
   setEnvironmentValue(environment, "QUACK_DATA_DIR", paths, "dataDir");
   setEnvironmentValue(environment, "QUACK_DB_PATH", paths, "dbPath");
-  setEnvironmentValue(
-    environment,
-    "QUACK_VECTOR_INDEX_PATH",
-    paths,
-    "vectorIndexPath"
-  );
+  setEnvironmentValue(environment, "QUACK_VECTOR_INDEX_PATH", paths, "vectorIndexPath");
 
   if (Object.keys(paths).length > 0) {
     config.paths = paths as Config["paths"];
@@ -142,28 +121,11 @@ function loadEnvironmentConfig(): Partial<Config> {
   setEnvironmentValue(environment, "QUACK_MODELS_CACHE_DIR", models, "cacheDir");
 
   const embedding: Record<string, unknown> = {};
-  setEnvironmentValue(
-    environment,
-    "QUACK_EMBEDDING_PROVIDER",
-    embedding,
-    "provider"
-  );
-  setEnvironmentValue(
-    environment,
-    "QUACK_EMBEDDING_MODEL_PATH",
-    embedding,
-    "modelPath"
-  );
-  setEnvironmentValue(
-    environment,
-    "QUACK_EMBEDDING_MODEL_ID",
-    embedding,
-    "modelId"
-  );
+  setEnvironmentValue(environment, "QUACK_EMBEDDING_PROVIDER", embedding, "provider");
+  setEnvironmentValue(environment, "QUACK_EMBEDDING_MODEL_PATH", embedding, "modelPath");
+  setEnvironmentValue(environment, "QUACK_EMBEDDING_MODEL_ID", embedding, "modelId");
 
-  const embeddingDimension = parseIntegerEnvironment(
-    environment.QUACK_EMBEDDING_DIMENSION
-  );
+  const embeddingDimension = parseIntegerEnvironment(environment.QUACK_EMBEDDING_DIMENSION);
   if (embeddingDimension !== undefined) {
     embedding.dimension = embeddingDimension;
   }
@@ -173,24 +135,9 @@ function loadEnvironmentConfig(): Partial<Config> {
   }
 
   const reranker: Record<string, unknown> = {};
-  setEnvironmentValue(
-    environment,
-    "QUACK_RERANKER_PROVIDER",
-    reranker,
-    "provider"
-  );
-  setEnvironmentValue(
-    environment,
-    "QUACK_RERANKER_MODEL_PATH",
-    reranker,
-    "modelPath"
-  );
-  setEnvironmentValue(
-    environment,
-    "QUACK_RERANKER_MODEL_ID",
-    reranker,
-    "modelId"
-  );
+  setEnvironmentValue(environment, "QUACK_RERANKER_PROVIDER", reranker, "provider");
+  setEnvironmentValue(environment, "QUACK_RERANKER_MODEL_PATH", reranker, "modelPath");
+  setEnvironmentValue(environment, "QUACK_RERANKER_MODEL_ID", reranker, "modelId");
 
   if (Object.keys(reranker).length > 0) {
     models.reranker = reranker;
@@ -212,48 +159,18 @@ function loadEnvironmentConfig(): Partial<Config> {
   }
 
   const chunking: Record<string, number> = {};
-  setIntegerEnvironment(
-    environment,
-    "QUACK_CHUNK_TOKENS",
-    chunking,
-    "chunkTokens"
-  );
-  setIntegerEnvironment(
-    environment,
-    "QUACK_OVERLAP_TOKENS",
-    chunking,
-    "overlapTokens"
-  );
+  setIntegerEnvironment(environment, "QUACK_CHUNK_TOKENS", chunking, "chunkTokens");
+  setIntegerEnvironment(environment, "QUACK_OVERLAP_TOKENS", chunking, "overlapTokens");
 
   if (Object.keys(chunking).length > 0) {
     config.chunking = chunking as Config["chunking"];
   }
 
   const providers: Record<string, string> = {};
-  setEnvironmentValue(
-    environment,
-    "QUACK_PROVIDER_EMBEDDING",
-    providers,
-    "embedding"
-  );
-  setEnvironmentValue(
-    environment,
-    "QUACK_PROVIDER_RERANKER",
-    providers,
-    "reranker"
-  );
-  setEnvironmentValue(
-    environment,
-    "QUACK_PROVIDER_MIXER",
-    providers,
-    "mixer"
-  );
-  setEnvironmentValue(
-    environment,
-    "QUACK_PROVIDER_CHUNKER",
-    providers,
-    "chunker"
-  );
+  setEnvironmentValue(environment, "QUACK_PROVIDER_EMBEDDING", providers, "embedding");
+  setEnvironmentValue(environment, "QUACK_PROVIDER_RERANKER", providers, "reranker");
+  setEnvironmentValue(environment, "QUACK_PROVIDER_MIXER", providers, "mixer");
+  setEnvironmentValue(environment, "QUACK_PROVIDER_CHUNKER", providers, "chunker");
 
   if (Object.keys(providers).length > 0) {
     config.providers = providers as Config["providers"];
@@ -266,7 +183,7 @@ function setEnvironmentValue(
   environment: NodeJS.ProcessEnv,
   key: string,
   target: Record<string, unknown>,
-  targetKey: string
+  targetKey: string,
 ): void {
   const value = environment[key];
   if (value !== undefined && value !== "") {
@@ -278,7 +195,7 @@ function setIntegerEnvironment(
   environment: NodeJS.ProcessEnv,
   key: string,
   target: Record<string, number>,
-  targetKey: string
+  targetKey: string,
 ): void {
   const value = parseIntegerEnvironment(environment[key]);
   if (value !== undefined) {
@@ -295,16 +212,14 @@ function parseIntegerEnvironment(value: string | undefined): number | undefined 
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-function collectExplicitPaths(
-  layers: Array<Partial<Config>>
-): ExplicitPaths {
+function collectExplicitPaths(layers: Array<Partial<Config>>): ExplicitPaths {
   const explicit: ExplicitPaths = {
     dataDir: false,
     dbPath: false,
     vectorIndexPath: false,
     modelsCacheDir: false,
     embeddingModelPath: false,
-    rerankerModelPath: false
+    rerankerModelPath: false,
   };
 
   for (const layer of layers) {
@@ -324,16 +239,10 @@ function collectExplicitPaths(
       if (hasOwnProperty(layer.models, "cacheDir")) {
         explicit.modelsCacheDir = true;
       }
-      if (
-        layer.models.embedding &&
-        hasOwnProperty(layer.models.embedding, "modelPath")
-      ) {
+      if (layer.models.embedding && hasOwnProperty(layer.models.embedding, "modelPath")) {
         explicit.embeddingModelPath = true;
       }
-      if (
-        layer.models.reranker &&
-        hasOwnProperty(layer.models.reranker, "modelPath")
-      ) {
+      if (layer.models.reranker && hasOwnProperty(layer.models.reranker, "modelPath")) {
         explicit.rerankerModelPath = true;
       }
     }
@@ -342,10 +251,7 @@ function collectExplicitPaths(
   return explicit;
 }
 
-function applyDerivedPaths(
-  config: Config,
-  explicit: ExplicitPaths
-): Config {
+function applyDerivedPaths(config: Config, explicit: ExplicitPaths): Config {
   const derived = structuredClone(config) as Config;
 
   if (!explicit.dbPath) {
@@ -353,10 +259,7 @@ function applyDerivedPaths(
   }
 
   if (!explicit.vectorIndexPath) {
-    derived.paths.vectorIndexPath = path.join(
-      derived.paths.dataDir,
-      "index.hnsw"
-    );
+    derived.paths.vectorIndexPath = path.join(derived.paths.dataDir, "index.hnsw");
   }
 
   if (!explicit.modelsCacheDir) {
@@ -372,7 +275,7 @@ function resolveConfigPaths(config: Config): Config {
   resolved.paths = {
     dataDir: resolvePath(config.paths.dataDir),
     dbPath: resolvePath(config.paths.dbPath),
-    vectorIndexPath: resolvePath(config.paths.vectorIndexPath)
+    vectorIndexPath: resolvePath(config.paths.vectorIndexPath),
   };
 
   resolved.models = {
@@ -382,14 +285,14 @@ function resolveConfigPaths(config: Config): Config {
       ...resolved.models.embedding,
       modelPath: config.models.embedding.modelPath
         ? resolvePath(config.models.embedding.modelPath)
-        : undefined
+        : undefined,
     },
     reranker: {
       ...resolved.models.reranker,
       modelPath: config.models.reranker.modelPath
         ? resolvePath(config.models.reranker.modelPath)
-        : undefined
-    }
+        : undefined,
+    },
   };
 
   return resolved;
@@ -427,9 +330,7 @@ function mergeTwo<T>(target: T, source: Partial<T>): T {
 
 function formatConfigAsToml(config: Config, useHomeTilde: boolean): string {
   const sanitized = stripUndefined(config) as Config;
-  const prepared = useHomeTilde
-    ? replaceHomePathInConfig(sanitized)
-    : sanitized;
+  const prepared = useHomeTilde ? replaceHomePathInConfig(sanitized) : sanitized;
 
   return toml.stringify(prepared as unknown as toml.JsonMap);
 }
@@ -455,7 +356,7 @@ function replaceHomePathInConfig(config: Config): Config {
     paths: {
       dataDir: replacePath(config.paths.dataDir),
       dbPath: replacePath(config.paths.dbPath),
-      vectorIndexPath: replacePath(config.paths.vectorIndexPath)
+      vectorIndexPath: replacePath(config.paths.vectorIndexPath),
     },
     models: {
       ...config.models,
@@ -464,15 +365,15 @@ function replaceHomePathInConfig(config: Config): Config {
         ...config.models.embedding,
         modelPath: config.models.embedding.modelPath
           ? replacePath(config.models.embedding.modelPath)
-          : undefined
+          : undefined,
       },
       reranker: {
         ...config.models.reranker,
         modelPath: config.models.reranker.modelPath
           ? replacePath(config.models.reranker.modelPath)
-          : undefined
-      }
-    }
+          : undefined,
+      },
+    },
   };
 }
 
@@ -498,10 +399,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function hasOwnProperty(
-  value: Record<string, unknown>,
-  key: string
-): boolean {
+function hasOwnProperty(value: Record<string, unknown>, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(value, key);
 }
 
